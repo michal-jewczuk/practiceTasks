@@ -12,22 +12,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CatUnitTest {
 
-    static final String CAT_NAME1 = "Baron";
-    static final String CAT_NAME2 = "Bonifacy";
-    static final String CAT_NAME3 = "Mruczek";
-    static final String CAT_NAME4 = "Luna";
-    static final String CAT_NAME5 = "AnotherCat";
-    static final String CAT_NAME6 = "OtherCat";
+    static final String CAT_BARON = "Baron";
+    static final String CAT_BONIFACY = "Bonifacy";
+    static final String CAT_MRUCZEK = "Mruczek";
+    static final String CAT_LUNA = "Luna";
+    static final String CAT_ANOTHER_CAT = "AnotherCat";
+    static final String CAT_OTHER_CAT = "OtherCat";
 
     private Cat cat1, cat2, cat3, cat4, cat5;
 
     @BeforeEach
     void init() {
-        cat1 = new Cat(9, CAT_NAME3);
-        cat2 = new Cat(4, CAT_NAME1);
-        cat3 = new Cat(2, CAT_NAME2);
-        cat4 = new Cat(5, CAT_NAME1);
-        cat5 = new Cat(5, CAT_NAME4);
+        cat1 = new Cat(9, CAT_MRUCZEK);
+        cat2 = new Cat(4, CAT_BARON);
+        cat3 = new Cat(2, CAT_BONIFACY);
+        cat4 = new Cat(5, CAT_BARON);
+        cat5 = new Cat(5, CAT_LUNA);
     }
 
     @Nested
@@ -45,7 +45,6 @@ public class CatUnitTest {
         }
 
         @Nested
-        @DisplayName("should")
         class HappyCases {
 
             @ParameterizedTest
@@ -141,27 +140,27 @@ public class CatUnitTest {
                 Collections.sort(cats, catComparator);
 
                 //then
-                assertAll( () -> assertEquals(CAT_NAME4, cats.get(0).getName()),
-                           () -> assertEquals(CAT_NAME1, cats.get(1).getName()),
+                assertAll( () -> assertEquals(CAT_LUNA, cats.get(0).getName()),
+                           () -> assertEquals(CAT_BARON, cats.get(1).getName()),
                            () -> assertEquals(5, cats.get(1).getLives()),
-                           () -> assertEquals(CAT_NAME1, cats.get(2).getName()),
+                           () -> assertEquals(CAT_BARON, cats.get(2).getName()),
                            () -> assertEquals(4, cats.get(2).getLives()),
-                           () -> assertEquals(CAT_NAME3, cats.get(3).getName()));
+                           () -> assertEquals(CAT_MRUCZEK, cats.get(3).getName()));
             }
 
             @Test
             @DisplayName("put the element with null lives amount before the element with the same name but lives amount smaller than Integer.MAX_VALUE")
             void whenElementWithNullLivesAmountAndTheSameNameAdded() {
                 //given
-                cats.add(new Cat(null, CAT_NAME2));
+                cats.add(new Cat(null, CAT_BONIFACY));
 
                 //when
                 Collections.sort(cats, catComparator);
 
                 //then
-                assertAll( () -> assertEquals(CAT_NAME2, cats.get(4).getName()),
+                assertAll( () -> assertEquals(CAT_BONIFACY, cats.get(4).getName()),
                            () -> assertEquals(Integer.MAX_VALUE, cats.get(4).getLives()),
-                           () -> assertEquals(CAT_NAME2, cats.get(5).getName()),
+                           () -> assertEquals(CAT_BONIFACY, cats.get(5).getName()),
                            () -> assertEquals(2, cats.get(5).getLives()));
             }
         }
@@ -172,7 +171,7 @@ public class CatUnitTest {
     class PredicateCases {
 
         private List<Cat> cats;
-        private final Predicate<Cat> namePredicate = c -> c.getName() == CAT_NAME1;
+        private final Predicate<Cat> namePredicate = c -> c.getName() == CAT_BARON;
         private final Predicate<Cat> livesPredicate = c -> c.getLives() > 3 && c.getLives() < 7;
 
         @BeforeEach
@@ -244,17 +243,17 @@ public class CatUnitTest {
 
     private static List<Cat> generateCatsWithNewNames() {
         List<Cat> newCats = new ArrayList<>();
-        newCats.add(new Cat(1, CAT_NAME5));
-        newCats.add(new Cat(9, CAT_NAME6));
-        newCats.add(new Cat(null, CAT_NAME6));
+        newCats.add(new Cat(1, CAT_ANOTHER_CAT));
+        newCats.add(new Cat(9, CAT_OTHER_CAT));
+        newCats.add(new Cat(null, CAT_OTHER_CAT));
         return newCats;
     }
 
     private static List<Cat> generateCatsWithOldNames() {
         List<Cat> newCats = new ArrayList<>();
-        newCats.add(new Cat(1, CAT_NAME1));
-        newCats.add(new Cat(9, CAT_NAME2));
-        newCats.add(new Cat(null, CAT_NAME3));
+        newCats.add(new Cat(1, CAT_BARON));
+        newCats.add(new Cat(9, CAT_BONIFACY));
+        newCats.add(new Cat(null, CAT_MRUCZEK));
         return newCats;
     }
 }
