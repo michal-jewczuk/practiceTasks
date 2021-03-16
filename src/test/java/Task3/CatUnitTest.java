@@ -1,6 +1,8 @@
 package Task3;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -10,6 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CatUnitTest {
 
+    static final String CAT_NAME1 = "Baron";
+    static final String CAT_NAME2 = "Bonifacy";
+    static final String CAT_NAME3 = "Mruczek";
+    static final String CAT_NAME4 = "Luna";
+    static final String CAT_NAME5 = "AnotherCat";
+    static final String CAT_NAME6 = "OtherCat";
+
+    private Cat cat1, cat2, cat3, cat4, cat5;
+
+    @BeforeEach
+    void init() {
+        cat1 = new Cat(9, CAT_NAME3);
+        cat2 = new Cat(4, CAT_NAME1);
+        cat3 = new Cat(2, CAT_NAME2);
+        cat4 = new Cat(5, CAT_NAME1);
+        cat5 = new Cat(5, CAT_NAME4);
+    }
+
     @Nested
     @DisplayName("equality of objects tested using Set of objects")
     class SetCases {
@@ -18,70 +38,77 @@ public class CatUnitTest {
         @BeforeEach
         void prepare() {
             cats = new HashSet<>();
-            cats.add(new Cat(9, "Mruczek"));
-            cats.add(new Cat(4, "Baron"));
-            cats.add(new Cat(2, "Bonifacy"));
-            cats.add(new Cat(5, "Baron"));
-            cats.add(new Cat(5, "Luna"));
+            cats.add(cat1);
+            cats.add(cat2);
+            cats.add(cat3);
+            cats.add(cat5);
         }
 
         @Nested
-        @DisplayName("should return true")
+        @DisplayName("should")
         class HappyCases {
 
-            @Test
-            @DisplayName("when set contains an object with same name and different lives amount")
-            void whenSameNameAndDifferentLivesAmount() {
-                Cat cat = new Cat(1, "Luna");
-                Assertions.assertTrue(cats.contains(cat));
+            @ParameterizedTest
+            @MethodSource("Task3.CatUnitTest#generateCatsWithNewNames")
+            @DisplayName("add a cat to the set when name is not yet present in this set")
+            void whenAddingACatWithNameNotYetPresentInSet(Cat cat) {
+                //given
+                int originalSize = cats.size();
+
+                //when
+                cats.add(cat);
+
+                //then
+                assertEquals(originalSize + 1, cats.size());
             }
 
-            @Test
-            @DisplayName("when set contains an object with same name and same lives amount")
-            void whenSameNameAndSameLivesAmount() {
-                Cat cat = new Cat(5, "Baron");
-                Assertions.assertTrue(cats.contains(cat));
+            @ParameterizedTest
+            @MethodSource("Task3.CatUnitTest#generateCatsWithOldNames")
+            @DisplayName("remove a cat from the set when name is already present in this set")
+            void whenRemovingACatWithNameAlreadyPresentInSet(Cat cat) {
+                //given
+                int originalSize = cats.size();
+
+                //when
+                cats.remove(cat);
+
+                //then
+                assertEquals(originalSize - 1, cats.size());
             }
 
-            @Test
-            @DisplayName("when set contains an object with same name and null instead of lives amount")
-            void whenSameNameAndNullAsLivesAmount() {
-                Cat cat = new Cat(null, "Baron");
-                Assertions.assertTrue(cats.contains(cat));
-            }
         }
 
         @Nested
-        @DisplayName("should return false")
+        @DisplayName("should not")
         class AlternativeCases {
 
-            @Test
-            @DisplayName("when set contains an object with different name and same lives amount")
-            void whenDifferentNameAndSameLivesAmount() {
-                Cat cat = new Cat(9, "MRUCZEK");
-                Assertions.assertFalse(cats.contains(cat));
+            @ParameterizedTest
+            @MethodSource("Task3.CatUnitTest#generateCatsWithOldNames")
+            @DisplayName("add a cat to the set when name is already in this set")
+            void whenAddingACatWithNameAlreadyPresentInSet(Cat cat) {
+                //given
+                int originalSize = cats.size();
+
+                //when
+                cats.add(cat);
+
+                //then
+                assertEquals(originalSize, cats.size());
             }
 
-            @Test
-            @DisplayName("when set contains an object with different name and different lives amount")
-            void whenDifferentNameAndDifferentLivesAmount() {
-                Cat cat = new Cat(1, "MRUCZEK");
-                Assertions.assertFalse(cats.contains(cat));
-            }
+            @ParameterizedTest
+            @MethodSource("Task3.CatUnitTest#generateCatsWithNewNames")
+            @DisplayName("remove a cat from the set when name is not present in this set")
+            void whenRemovingACatWithNameNotPresentInSet(Cat cat) {
+                //given
+                int originalSize = cats.size();
 
-            @Test
-            @DisplayName("when set contains an object with null as a name")
-            void whenNullAsAName() {
-                Cat cat = new Cat(1, null);
-                Assertions.assertFalse(cats.contains(cat));
-            }
+                //when
+                cats.remove(cat);
 
-            @Test
-            @DisplayName("when null is given to compare with set objects")
-            void whenNullInsteadOfAnObject() {
-                Assertions.assertFalse(cats.contains(null));
+                //then
+                assertEquals(originalSize, cats.size());
             }
-
         }
 
     }
@@ -96,11 +123,11 @@ public class CatUnitTest {
         @BeforeEach
         void prepare() {
             cats = new ArrayList<>();
-            cats.add(new Cat(9, "Mruczek"));
-            cats.add(new Cat(4, "Baron"));
-            cats.add(new Cat(2, "Bonifacy"));
-            cats.add(new Cat(5, "Baron"));
-            cats.add(new Cat(5, "Luna"));
+            cats.add(cat1);
+            cats.add(cat2);
+            cats.add(cat3);
+            cats.add(cat4);
+            cats.add(cat5);
         }
 
         @Nested
@@ -114,27 +141,27 @@ public class CatUnitTest {
                 Collections.sort(cats, catComparator);
 
                 //then
-                assertAll( () -> assertEquals("Luna", cats.get(0).getName()),
-                           () -> assertEquals("Baron", cats.get(1).getName()),
+                assertAll( () -> assertEquals(CAT_NAME4, cats.get(0).getName()),
+                           () -> assertEquals(CAT_NAME1, cats.get(1).getName()),
                            () -> assertEquals(5, cats.get(1).getLives()),
-                           () -> assertEquals("Baron", cats.get(2).getName()),
+                           () -> assertEquals(CAT_NAME1, cats.get(2).getName()),
                            () -> assertEquals(4, cats.get(2).getLives()),
-                           () -> assertEquals("Mruczek", cats.get(3).getName()));
+                           () -> assertEquals(CAT_NAME3, cats.get(3).getName()));
             }
 
             @Test
             @DisplayName("put the element with null lives amount before the element with the same name but lives amount smaller than Integer.MAX_VALUE")
             void whenElementWithNullLivesAmountAndTheSameNameAdded() {
                 //given
-                cats.add(new Cat(null, "Bonifacy"));
+                cats.add(new Cat(null, CAT_NAME2));
 
                 //when
                 Collections.sort(cats, catComparator);
 
                 //then
-                assertAll( () -> assertEquals("Bonifacy", cats.get(4).getName()),
+                assertAll( () -> assertEquals(CAT_NAME2, cats.get(4).getName()),
                            () -> assertEquals(Integer.MAX_VALUE, cats.get(4).getLives()),
-                           () -> assertEquals("Bonifacy", cats.get(5).getName()),
+                           () -> assertEquals(CAT_NAME2, cats.get(5).getName()),
                            () -> assertEquals(2, cats.get(5).getLives()));
             }
         }
@@ -145,18 +172,17 @@ public class CatUnitTest {
     class PredicateCases {
 
         private List<Cat> cats;
-        private Cat cat1, cat2, cat3, cat4, cat5;
-        private final Predicate<Cat> namePredicate = c -> c.getName() == "Baron";
+        private final Predicate<Cat> namePredicate = c -> c.getName() == CAT_NAME1;
         private final Predicate<Cat> livesPredicate = c -> c.getLives() > 3 && c.getLives() < 7;
 
         @BeforeEach
         void prepare() {
-            cat1 = new Cat(9, "Mruczek");
-            cat2 = new Cat(4, "Baron");
-            cat3 = new Cat(2, "Bonifacy");
-            cat4 = new Cat(5, "Baron");
-            cat5 = new Cat(5, "Luna");
-            cats = Arrays.asList(cat1, cat2, cat3, cat4, cat5);
+            cats = new ArrayList<>();
+            cats.add(cat1);
+            cats.add(cat2);
+            cats.add(cat3);
+            cats.add(cat4);
+            cats.add(cat5);
         }
 
         @Nested
@@ -214,5 +240,21 @@ public class CatUnitTest {
                 assertEquals(0, filteredCats.size());
             }
         }
+    }
+
+    private static List<Cat> generateCatsWithNewNames() {
+        List<Cat> newCats = new ArrayList<>();
+        newCats.add(new Cat(1, CAT_NAME5));
+        newCats.add(new Cat(9, CAT_NAME6));
+        newCats.add(new Cat(null, CAT_NAME6));
+        return newCats;
+    }
+
+    private static List<Cat> generateCatsWithOldNames() {
+        List<Cat> newCats = new ArrayList<>();
+        newCats.add(new Cat(1, CAT_NAME1));
+        newCats.add(new Cat(9, CAT_NAME2));
+        newCats.add(new Cat(null, CAT_NAME3));
+        return newCats;
     }
 }

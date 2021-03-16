@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 Design an immutable class that will have at least 3 fields:
 a)	A String field
 b)	A field with a Collection – no matter what, can be generic List or Set or a specific one
-c)	A filed with a reference to another class that has at least one field 
+c)	A filed with a reference to another class that has at least one field
  */
 public final class ImmutableClass {
 
